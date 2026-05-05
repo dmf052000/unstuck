@@ -1,9 +1,17 @@
 # Unstuck — agent notes
 
+- **Remote:** `https://github.com/dmf052000/unstuck.git` — default branch `main`.
 - **Stack:** Next.js 16 App Router (Vercel), Tailwind v4 tokens, Supabase (Auth + Postgres + RLS), Stripe Checkout + webhooks.
-- **Theme:** Hope-forward palette lives in `app/globals.css` (CSS variables + `@theme inline`).
+- **Auth edge:** Root **`proxy.ts`** refreshes Supabase session and redirects unauthenticated `/app/*` to `/login`. Shared logic: `lib/supabase/middleware.ts` (`updateSession`).
+- **Theme:** Hope-forward palette in `app/globals.css` (CSS variables + `@theme inline`).
 - **Content paths:** `content/paths/*.ts` + registry `lib/paths.ts`.
-- **Milestones:** B0 scaffold ✅ → Supabase schema (`supabase/migrations/…`) → Auth (`/login`, `/auth/callback`) → Stripe (`app/app/billing`, `/api/stripe/webhook`) → Journeys (`/app/journey/[pathId]`) → Assist (`/api/assist`, `lib/agent.ts`).
+- **Milestones:** Scaffold → Supabase schema (`supabase/migrations/…`) → Auth (`/login`, `/auth/callback`) → Stripe (`app/app/billing`, `/api/stripe/webhook`) → Journeys (`/app/journey/[pathId]`) → Assist (`/api/assist`, `lib/agent.ts`).
 - **Secrets:** Never commit real keys. Copy `.env.example` → `.env.local`. Service role + Stripe secrets are **server-only**.
 - **Supabase project used for MCP bootstrap:** ref `zjifbgkjtjpnoabfxcft` (empty DB before migration). Replace with your own project ref as needed.
-- **Redirect URLs:** In Supabase Auth settings, add `http://localhost:3000/auth/callback` and production `https://<domain>/auth/callback`.
+- **Human setup:** Supabase redirect URLs, Stripe webhook URL, Vercel env vars — see **README.md**.
+
+<!-- BEGIN:nextjs-agent-rules -->
+## Next.js note
+
+Next 16 differs from older docs—check `node_modules/next` or https://nextjs.org/docs when conventions look unfamiliar.
+<!-- END:nextjs-agent-rules -->

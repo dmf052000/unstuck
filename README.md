@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Unstuck
 
-## Getting Started
+Guided paths + open chat to build AI confidence and explore meaningful work. Stack: **Next.js 16** (App Router), **Supabase**, **Stripe**, **Vercel-ready**.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill `.env.local` (see `.env.example`). Minimum for local UX: Supabase URL + anon key; optional: service role (webhooks/admin), Stripe, `OPENAI_API_KEY`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Health check: `GET /api/health`
 
-## Learn More
+## Supabase
 
-To learn more about Next.js, take a look at the following resources:
+1. Create a project (or use your existing ref).
+2. Run SQL in `supabase/migrations/20260505000000_initial_unstuck.sql` if the DB is new.
+3. **Authentication → URL configuration**: add redirect URLs  
+   - `http://localhost:3000/auth/callback`  
+   - `https://<your-production-domain>/auth/callback`
+4. Enable **Email** (magic link) provider.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stripe (test mode)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create a **Product** + recurring **Price** for “Plus”.
+2. Set `STRIPE_PRICE_PLUS_MONTHLY` to that Price id.
+3. Webhook endpoint: `https://<your-domain>/api/stripe/webhook`  
+   Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
+4. Set `STRIPE_WEBHOOK_SECRET` from the webhook secret.
 
-## Deploy on Vercel
+## Deploy (Vercel)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Import repo: `https://github.com/dmf052000/unstuck`
+2. Add the same env vars as `.env.example` in the Vercel project (production + preview as needed).
+3. Update Supabase redirect URLs and Stripe webhook URL to the production host.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Conventions
+
+- Auth proxy: root `proxy.ts` (replaces deprecated `middleware.ts` in Next.js 16).
+- Path content: `content/paths/*.ts`, registry `lib/paths.ts`.
+- Agent + safety: `lib/agent.ts`; HTTP entry: `app/api/assist/route.ts`.
+
+See `AGENTS.md` for agent-oriented notes.
