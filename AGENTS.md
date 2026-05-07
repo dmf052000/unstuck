@@ -8,7 +8,7 @@
 - **Milestones:** Scaffold → Supabase schema (`supabase/migrations/…`) → Auth (`/login`, `/auth/callback`) → Stripe (`app/app/billing`, `/api/stripe/webhook`) → Journeys (`/app/journey/[pathId]`) → Assist (`/api/assist`, `lib/agent.ts`).
 - **Secrets:** Never commit real keys. Copy `.env.example` → `.env.local`. Service role + Stripe secrets are **server-only**.
 - **Supabase project used for MCP bootstrap:** ref `zjifbgkjtjpnoabfxcft` (empty DB before migration). Replace with your own project ref as needed.
-- **Human setup:** Supabase redirect URLs, Stripe webhook URL, Vercel env vars — see **README.md**.
+- **Local auth bypass:** When `NODE_ENV=development` and `AUTH_BYPASS=true`, `/app` skips the login redirect and the app shell calls `signInAnonymously()` (enable **Anonymous** provider in Supabase). Never use in production.
 
 <!-- BEGIN:nextjs-agent-rules -->
 ## Next.js note

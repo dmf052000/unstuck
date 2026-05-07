@@ -11,6 +11,8 @@ cp .env.example .env.local
 
 Fill `.env.local` (see `.env.example`). Minimum for local UX: Supabase URL + anon key; optional: service role (webhooks/admin), Stripe, `OPENAI_API_KEY`.
 
+For **fast local testing** without magic links, set `AUTH_BYPASS=true` **only** in development and turn on Supabase **Anonymous** sign-ins (see README Supabase section).
+
 ```bash
 pnpm dev
 ```
@@ -25,6 +27,7 @@ Health check: `GET /api/health`
    - `http://localhost:3000/auth/callback`  
    - `https://<your-production-domain>/auth/callback`
 4. Enable **Email** (magic link) provider.
+5. **Optional (`AUTH_BYPASS=true` locally):** enable **Anonymous** under Authentication → Providers so `/app` can auto sign-in during development.
 
 ## Stripe (test mode)
 

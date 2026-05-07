@@ -1,10 +1,46 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOut } from "@/app/app/actions";
+import { isLocalAuthBypass } from "@/lib/auth-bypass";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AppShellLayout({ children }: { children: ReactNode }) {
+async function ensureLocalDevSession() {
+  if (!isLocalAuthBypass()) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) return;
+
+  const { error } = await supabase.auth.signInAnonymously();
+  if (error) {
+    console.warn(
+      "[AUTH_BYPASS] Anonymous sign-in failed. Enable Anonymous provider in Supabase, or use normal login:",
+      error.message,
+    );
+  }
+}
+
+export default async function AppShellLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  await ensureLocalDevSession();
+  const bypass = isLocalAuthBypass();
+
   return (
     <div className="min-h-screen bg-background">
+      {bypass ? (
+        <div
+          className="border-b border-warm/30 bg-warm/15 px-4 py-2 text-center text-xs text-foreground"
+          role="status"
+        >
+          <strong>Dev mode:</strong> AUTH_BYPASS is on — using anonymous
+          Supabase session when possible. Disable in production.
+        </div>
+      ) : null}
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
